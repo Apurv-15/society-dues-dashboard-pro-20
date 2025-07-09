@@ -1,4 +1,6 @@
+
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AdminHeader } from './AdminHeader';
 import { StatsCards } from './StatsCards';
 import { ContributionForm } from './ContributionForm';
@@ -20,11 +22,11 @@ import { Calendar, Settings, Home } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+
 export const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
-  const {
-    logout
-  } = useAuthStore();
+  const navigate = useNavigate();
+  const { logout } = useAuthStore();
   const {
     selectedFinancialYear,
     setSelectedFinancialYear,
@@ -35,16 +37,33 @@ export const AdminDashboard = () => {
   const financialYears = getFinancialYears();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [tempDays, setTempDays] = useState(dailyContributionDays);
+
   const handleSaveSettings = () => {
     setDailyContributionDays(tempDays);
     setIsSettingsOpen(false);
   };
+
   const handleGoHome = () => {
-    logout();
-    window.location.reload();
+    console.log('Navigating to home page from admin dashboard');
+    navigate('/');
   };
-  return <div className="min-h-screen bg-gradient-to-br from-blue-50/80 via-white/60 to-green-50/80 backdrop-blur-xl">
-      <AdminHeader />
+
+  const handleLogout = async () => {
+    console.log('Logout initiated from admin dashboard');
+    try {
+      await logout();
+      console.log('Logout successful, redirecting to home');
+      navigate('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Still redirect to home even if logout fails
+      navigate('/');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/80 via-white/60 to-green-50/80 backdrop-blur-xl">
+      <AdminHeader onLogout={handleLogout} />
 
       <header className="bg-white/30 backdrop-blur-xl border-b border-white/20 sticky top-0 z-40">
         <div className="px-4 sm:px-6 py-4">
@@ -58,7 +77,12 @@ export const AdminDashboard = () => {
               </p>
             </div>
             <div className="flex items-center gap-4">
-              <Button variant="outline" size="sm" onClick={handleGoHome} className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleGoHome} 
+                className="flex items-center gap-2"
+              >
                 <Home className="w-4 h-4" />
                 <span className="hidden sm:inline">Go to Home Page</span>
               </Button>
@@ -75,7 +99,14 @@ export const AdminDashboard = () => {
                   <div className="space-y-4">
                     <div>
                       <Label htmlFor="days">Recent Daily Contributions (Days)</Label>
-                      <Input id="days" type="number" min="1" max="30" value={tempDays} onChange={e => setTempDays(parseInt(e.target.value) || 7)} />
+                      <Input 
+                        id="days" 
+                        type="number" 
+                        min="1" 
+                        max="30" 
+                        value={tempDays} 
+                        onChange={e => setTempDays(parseInt(e.target.value) || 7)} 
+                      />
                     </div>
                     <div className="flex justify-end gap-2">
                       <Button variant="outline" onClick={() => setIsSettingsOpen(false)}>
@@ -114,9 +145,11 @@ export const AdminDashboard = () => {
                   <SelectValue placeholder="Select financial year" />
                 </SelectTrigger>
                 <SelectContent className="bg-white/90 backdrop-blur-xl border-white/30">
-                  {financialYears.map(year => <SelectItem key={year} value={year}>
+                  {financialYears.map(year => (
+                    <SelectItem key={year} value={year}>
                       {year}
-                    </SelectItem>)}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -138,7 +171,9 @@ export const AdminDashboard = () => {
               <TabsTrigger value="event-manage" className="data-[state=active]:bg-white/70 data-[state=active]:text-blue-700 data-[state=active]:shadow-lg text-xs sm:text-sm">
                 Manage Events
               </TabsTrigger>
-              <TabsTrigger value="manage" className="data-[state=active]:bg-white/70 data-[state=active]:text-blue-700 data-[state=active]:shadow-lg text-xs sm:text-sm">Donation</TabsTrigger>
+              <TabsTrigger value="manage" className="data-[state=active]:bg-white/70 data-[state=active]:text-blue-700 data-[state=active]:shadow-lg text-xs sm:text-sm">
+                Donation
+              </TabsTrigger>
               <TabsTrigger value="expenses" className="data-[state=active]:bg-white/70 data-[state=active]:text-blue-700 data-[state=active]:shadow-lg text-xs sm:text-sm">
                 Expenses
               </TabsTrigger>
@@ -189,5 +224,6 @@ export const AdminDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </div>;
+    </div>
+  );
 };
