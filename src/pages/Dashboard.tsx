@@ -102,32 +102,6 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
       <div className="container mx-auto px-4 py-8">
         <UserDashboard />
-        
-        <div className="mt-8">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="events">Available Events</TabsTrigger>
-              <TabsTrigger value="registrations">My Registrations</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="events" className="mt-6">
-              <UserEventsList
-                events={events}
-                loading={eventsLoading}
-                onRegister={handleRegister}
-                userRegistrations={registrations}
-              />
-            </TabsContent>
-            
-            <TabsContent value="registrations" className="mt-6">
-              <UserRegistrationsList
-                registrations={registrations}
-                events={events}
-                loading={eventsLoading}
-              />
-            </TabsContent>
-          </Tabs>
-        </div>
       </div>
 
       <CompactEventRegistrationForm
