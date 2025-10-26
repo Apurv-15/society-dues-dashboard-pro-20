@@ -4,7 +4,7 @@ import { useDonationStore } from '@/store/donationStore';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, TrendingDown, DollarSign, Calculator } from 'lucide-react';
 
-const COLORS = ['#10b981', '#ef4444', '#3b82f6', '#f59e0b'];
+const COLORS = ['#10b981', '#ef4444', '#3b82f6', '#f59e0b', '#8b5cf6', '#06b6d4'];
 
 export const BalanceSheet = () => {
   const { 
@@ -22,9 +22,11 @@ export const BalanceSheet = () => {
   const balance = getBalance();
   const financialYears = getFinancialYears();
 
-  // Yearly comparison data
-  const yearlyData = financialYears.slice(0, 3).map(year => ({
+  // Yearly comparison data - show all available years from Firebase
+  const uniqueYears = [...new Set(financialYears)];
+  const yearlyData = uniqueYears.map(year => ({
     year: year.split('-')[0],
+    fullYear: year,
     income: getTotalIncome(year),
     expenses: getTotalExpenses(year),
     balance: getBalance(year)
@@ -134,12 +136,22 @@ export const BalanceSheet = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={yearlyData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="year" />
+                  <XAxis
+                    dataKey="year"
+                    tick={{ fontSize: 12 }}
+                    interval={0}
+                  />
                   <YAxis />
-                  <Tooltip formatter={(value) => `₹${value.toLocaleString()}`} />
-                  <Bar dataKey="income" fill="#10b981" name="Income" />
-                  <Bar dataKey="expenses" fill="#ef4444" name="Expenses" />
-                  <Bar dataKey="balance" fill="#3b82f6" name="Balance" />
+                  <Tooltip
+                    formatter={(value) => `₹${value.toLocaleString()}`}
+                    labelFormatter={(label) => {
+                      const item = yearlyData.find(d => d.year === label);
+                      return item ? `FY ${item.fullYear}` : label;
+                    }}
+                  />
+                  <Bar dataKey="income" fill={COLORS[0]} name="Income" />
+                  <Bar dataKey="expenses" fill={COLORS[1]} name="Expenses" />
+                  <Bar dataKey="balance" fill={COLORS[2]} name="Balance" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -162,7 +174,7 @@ export const BalanceSheet = () => {
                     labelLine={false}
                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                     outerRadius={80}
-                    fill="#8884d8"
+                    fill={COLORS[0]}
                     dataKey="value"
                   >
                     {categoryData.map((entry, index) => (
@@ -177,8 +189,8 @@ export const BalanceSheet = () => {
         </Card>
       </div>
 
-      {/* Payment Method Breakdown */}
-      <Card className="border-0 shadow-lg bg-white/60 backdrop-blur-sm">
+      {/* Payment Method Breakdown - Temporarily Hidden */}
+      {/* <Card className="border-0 shadow-lg bg-white/60 backdrop-blur-sm">
         <CardHeader>
           <CardTitle>Payment Method Breakdown</CardTitle>
         </CardHeader>
@@ -190,12 +202,12 @@ export const BalanceSheet = () => {
                 <XAxis type="number" />
                 <YAxis dataKey="name" type="category" width={120} />
                 <Tooltip formatter={(value) => `₹${value.toLocaleString()}`} />
-                <Bar dataKey="value" fill="#6366f1" />
+                <Bar dataKey="value" fill={COLORS[3]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 };
