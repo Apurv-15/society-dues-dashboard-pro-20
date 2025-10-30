@@ -1,21 +1,11 @@
-// Firebase configuration using environment variables with fallbacks
+// Firebase configuration
 export const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || ''
+  apiKey: "AIzaSyDLy_6UOn4GERksWMnTxIC1uq8JdJXAOTc",
+  authDomain: "todo-app-cp-d3000.firebaseapp.com",
+  projectId: "todo-app-cp-d3000",
+  storageBucket: "todo-app-cp-d3000.firebasestorage.app",
+  messagingSenderId: "649271171176",
+  appId: "1:649271171176:web:f598269fd9aaa45f4703dd",
+  measurementId: "G-LGXNDHBZFK"
 };
 
-// Validate required environment variables in production
-if (import.meta.env.PROD) {
-  const missingVariables = Object.entries(firebaseConfig)
-    .filter(([_, value]) => !value)
-    .map(([key]) => key.replace('VITE_', ''));
-
-  if (missingVariables.length > 0) {
-    throw new Error(`Missing required Firebase environment variables: ${missingVariables.join(', ')}`);
-  }
-}
